@@ -1,0 +1,58 @@
+name: automated-cleanup-resources
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * *"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/automated-cleanup-resources.yml
+      - infra/bootstrapping/**
+      - infra/scripts/**
+permissions:
+  id-token: write
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: setup python
+      uses: actions/setup-python@v2
+      with: 
+        python-version: "${{ vars.AZUREML_NOTEBOOKS_PYTHON_VERSION || '3.13' }}"
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.OIDC_AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.OIDC_AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.OIDC_AZURE_SUBSCRIPTION_ID }}
+        enable-AzPSSession: true
+      continue-on-error: true
+    - name: "Install Az Modules"
+      shell: pwsh
+      run: |
+        Install-Module Az -Force; Import-Module Az -Force;
+    - name: setup-cli
+      run: |
+          source "${{ github.workspace }}/infra/bootstrapping/sdk_helpers.sh";
+          source "${{ github.workspace }}/infra/bootstrapping/init_environment.sh";
+          bash setup.sh
+      working-directory: cli
+      continue-on-error: true
+    - name: Perform Cleanup
+      run: |
+          source "${{ github.workspace }}/infra/bootstrapping/sdk_helpers.sh";
+          source "${{ github.workspace }}/infra/bootstrapping/init_environment.sh";
+          bash cleanup.sh
+      working-directory: infra/bootstrapping
+      continue-on-error: true
+    - name: Perform additional Cleanup
+      run: |
+          source "${{ github.workspace }}/infra/bootstrapping/sdk_helpers.sh";
+          source "${{ github.workspace }}/infra/bootstrapping/init_environment.sh";
+          pwsh -File '${{ github.workspace }}/infra/scripts/call_all_scripts.ps1'

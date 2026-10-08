@@ -1,0 +1,7 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+command: |
+  pip install ipykernel papermill
+  papermill hello-notebook.ipynb outputs/out.ipynb -k python
+code: src
+environment:
+  image: library/python:3.11.6

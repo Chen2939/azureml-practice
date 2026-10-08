@@ -1,0 +1,19 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+code: src
+command: >-
+  pip install -r requirements.txt &&
+  python main.py 
+  --iris-csv ${{inputs.iris_csv}}
+  --epochs ${{inputs.epochs}}
+  --lr ${{inputs.lr}}
+inputs:
+  iris_csv:
+    type: uri_file 
+    path: https://azuremlexamples.blob.core.windows.net/datasets/iris.csv
+  epochs: 10
+  lr: 0.1
+environment: azureml://registries/azureml/environments/sklearn-1.5/labels/latest
+compute: azureml:cpu-cluster
+display_name: pytorch-iris-example
+experiment_name: pytorch-iris-example
+description: Train a neural network with PyTorch on the Iris dataset.

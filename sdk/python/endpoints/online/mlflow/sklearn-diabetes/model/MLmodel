@@ -1,0 +1,25 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.3
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.1.2
+mlflow_version: 2.7.1
+model_uuid: 3f725f3264314c02808dd99d5e5b2781
+run_id: 70f15bab-cf98-48f1-a2ea-9ad2108c28cd
+signature:
+  inputs: '[{"name": "age", "type": "double"}, {"name": "sex", "type": "double"},
+    {"name": "bmi", "type": "double"}, {"name": "bp", "type": "double"}, {"name":
+    "s1", "type": "double"}, {"name": "s2", "type": "double"}, {"name": "s3", "type":
+    "double"}, {"name": "s4", "type": "double"}, {"name": "s5", "type": "double"},
+    {"name": "s6", "type": "double"}]'
+  outputs: '[{"type": "double"}]'
