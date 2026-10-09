@@ -1,0 +1,4 @@
+paths:
+  - file: ./test.parquet
+transformations:
+  - read_parquet
